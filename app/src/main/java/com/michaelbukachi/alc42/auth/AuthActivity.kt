@@ -43,6 +43,9 @@ class AuthActivity : AppCompatActivity() {
             .build()
         gClient = GoogleSignIn.getClient(this, gso)
         viewModel = ViewModelProviders.of(this)[AuthViewModel::class.java]
+        viewModel.showMessageInt.observe(this, Observer {
+            Snackbar.make(container, it, Snackbar.LENGTH_SHORT).show()
+        })
         viewModel.showMessage.observe(this, Observer {
             Snackbar.make(container, it, Snackbar.LENGTH_SHORT).show()
         })
@@ -50,6 +53,10 @@ class AuthActivity : AppCompatActivity() {
             startActivity(Intent(this@AuthActivity, UserActivity::class.java))
             finish()
         })
+        if (viewModel.isSignedIn()) {
+            startActivity(Intent(this@AuthActivity, UserActivity::class.java))
+            finish()
+        }
     }
 
     private fun signInWithGoogle() {

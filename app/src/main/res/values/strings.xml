@@ -4,4 +4,10 @@
     <string name="email_sign_in">Sign in with email</string>
     <string name="success">Success</string>
     <string name="auth_failed">Authentication Failed</string>
+    <string name="logout">Logout</string>
+    <string name="email">Email</string>
+    <string name="name"><![CDATA[First & last name]]></string>
+    <string name="password">Password</string>
+    <string name="save">Save</string>
+    <string name="sign_up">Sign Up</string>
 </resources>
