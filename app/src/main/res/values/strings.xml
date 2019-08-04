@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">ALC42</string>
+    <string name="app_name">Travelmantics</string>
+    <string name="alc_4">ALC 4.0</string>
+    <string name="email_sign_in">Sign in with email</string>
+    <string name="success">Success</string>
+    <string name="auth_failed">Authentication Failed</string>
 </resources>
