@@ -1,11 +1,15 @@
 package com.michaelbukachi.alc42.main
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
 import com.michaelbukachi.alc42.SingleLiveEvent
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -14,10 +18,13 @@ class DealViewModel : ViewModel() {
     val showMessage = SingleLiveEvent<String>()
     val onDeals = SingleLiveEvent<List<TravelDeal>>()
     val refreshMenu = SingleLiveEvent<Void>()
+    val setImage = SingleLiveEvent<String>()
     private val db = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
+    private val storage = FirebaseStorage.getInstance()
     private val dealsRef = db.reference.child("traveldeals")
     private val adminsRef = db.reference.child("administrators")
+    private val dealsStorageRef = storage.reference.child("deals_pictures")
     var isAdmin = false
 
     private val authListener = FirebaseAuth.AuthStateListener { p0 ->
@@ -90,6 +97,20 @@ class DealViewModel : ViewModel() {
 
     fun deleteDeal(id: String) = viewModelScope.launch {
         dealsRef.child(id).removeValue().await()
+    }
+
+    fun uploadDealImage(uri: Uri) = viewModelScope.launch(Dispatchers.IO) {
+        val imageRef = dealsStorageRef.child(uri.lastPathSegment!!)
+        try {
+            val uploadTask = imageRef.putFile(uri)
+            uploadTask.await()
+            val imageUrl = imageRef.downloadUrl.await().toString()
+            setImage.postValue(imageUrl)
+        } catch (e: FirebaseException) {
+            Log.e(javaClass.name, e.message, e)
+            showMessage.postValue(e.message)
+        }
+
     }
 
 }

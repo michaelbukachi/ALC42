@@ -1,6 +1,8 @@
 package com.michaelbukachi.alc42.main
 
 import android.app.Activity
+import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -11,10 +13,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import com.michaelbukachi.alc42.R
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_admin.*
 
 class AdminActivity : AppCompatActivity() {
 
+    private val PICTURE_RESULT = 42
     lateinit var viewModel: DealViewModel
     private var deal = TravelDeal(title = "", description = "", price = "", imageUrl = "")
 
@@ -33,6 +37,11 @@ class AdminActivity : AppCompatActivity() {
             txtTitle.isEnabled = viewModel.isAdmin
             txtDescription.isEnabled = viewModel.isAdmin
             txtPrice.isEnabled = viewModel.isAdmin
+            selectImage.visibility = if (viewModel.isAdmin) View.VISIBLE else View.GONE
+        })
+        viewModel.setImage.observe(this, Observer {
+            this.deal.imageUrl = it
+            showImage(it)
         })
         val deal = intent.getSerializableExtra("deal") as TravelDeal?
         deal?.let {
@@ -41,6 +50,13 @@ class AdminActivity : AppCompatActivity() {
         txtTitle.setText(this.deal.title)
         txtDescription.setText(this.deal.description)
         txtPrice.setText(this.deal.price)
+        showImage(this.deal.imageUrl)
+        selectImage.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/jpeg"
+            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+            startActivityForResult(Intent.createChooser(intent, "Insert Picture"), PICTURE_RESULT)
+        }
 
     }
 
@@ -68,6 +84,14 @@ class AdminActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICTURE_RESULT && resultCode == Activity.RESULT_OK) {
+            val imageUri = data!!.data
+            viewModel.uploadDealImage(imageUri!!)
+        }
+    }
+
     private fun saveDeal() {
         if (txtTitle.text.toString().isEmpty() || txtDescription.text.toString().isEmpty() ||
             txtPrice.text.toString().isEmpty()
@@ -75,11 +99,13 @@ class AdminActivity : AppCompatActivity() {
             Snackbar.make(container, R.string.fill_all_fields, Snackbar.LENGTH_SHORT).show()
             return
         }
+        progressBar.visibility = View.VISIBLE
         this.deal.title = txtTitle.text.toString()
         this.deal.description = txtDescription.text.toString()
         this.deal.price = txtPrice.text.toString()
         viewModel.saveDeal(deal)
         Snackbar.make(container, "Deal Saved", Snackbar.LENGTH_SHORT).show()
+        progressBar.visibility = View.GONE
         clear()
         backToList()
     }
@@ -111,5 +137,19 @@ class AdminActivity : AppCompatActivity() {
             view = View(this)
         }
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun showImage(url: String?) {
+        url?.let {
+            if (it.isNotEmpty()) {
+                val width = Resources.getSystem().displayMetrics.widthPixels
+                Picasso.get()
+                    .load(it)
+                    .resize(width, width * 2 / 3)
+                    .centerCrop()
+                    .into(dealImage)
+            }
+        }
+
     }
 }
