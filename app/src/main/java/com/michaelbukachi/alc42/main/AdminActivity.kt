@@ -40,8 +40,10 @@ class AdminActivity : AppCompatActivity() {
             selectImage.visibility = if (viewModel.isAdmin) View.VISIBLE else View.GONE
         })
         viewModel.setImage.observe(this, Observer {
-            this.deal.imageUrl = it
-            showImage(it)
+            progressBar.visibility = View.GONE
+            this.deal.imageUrl = it.first
+            this.deal.imageName = it.second
+            showImage(it.first)
         })
         val deal = intent.getSerializableExtra("deal") as TravelDeal?
         deal?.let {
@@ -88,6 +90,7 @@ class AdminActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICTURE_RESULT && resultCode == Activity.RESULT_OK) {
             val imageUri = data!!.data
+            progressBar.visibility = View.VISIBLE
             viewModel.uploadDealImage(imageUri!!)
         }
     }
@@ -115,7 +118,7 @@ class AdminActivity : AppCompatActivity() {
             Snackbar.make(container, "Please save the deal before deleting", Snackbar.LENGTH_SHORT).show()
             return
         }
-        viewModel.deleteDeal(deal.id!!)
+        viewModel.deleteDeal(deal)
         backToList()
     }
 

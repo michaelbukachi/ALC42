@@ -7,5 +7,6 @@ data class TravelDeal(
     var title: String? = null,
     var description: String? = null,
     var price: String? = null,
-    var imageUrl: String? = null
+    var imageUrl: String? = null,
+    var imageName: String? = null
 ) : Serializable

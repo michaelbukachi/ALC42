@@ -18,7 +18,7 @@ class DealViewModel : ViewModel() {
     val showMessage = SingleLiveEvent<String>()
     val onDeals = SingleLiveEvent<List<TravelDeal>>()
     val refreshMenu = SingleLiveEvent<Void>()
-    val setImage = SingleLiveEvent<String>()
+    val setImage = SingleLiveEvent<Pair<String, String>>()
     private val db = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private val storage = FirebaseStorage.getInstance()
@@ -95,8 +95,19 @@ class DealViewModel : ViewModel() {
 
     }
 
-    fun deleteDeal(id: String) = viewModelScope.launch {
-        dealsRef.child(id).removeValue().await()
+    fun deleteDeal(deal: TravelDeal) = viewModelScope.launch {
+        try {
+            dealsRef.child(deal.id!!).removeValue().await()
+            deal.imageName?.let {
+                if (it.isNotEmpty()) {
+                    val imageRef = storage.reference.child(it)
+                    imageRef.delete().await()
+                }
+            }
+        } catch (e: FirebaseException) {
+            Log.e(javaClass.name, "An error occurred", e)
+        }
+
     }
 
     fun uploadDealImage(uri: Uri) = viewModelScope.launch(Dispatchers.IO) {
@@ -105,7 +116,10 @@ class DealViewModel : ViewModel() {
             val uploadTask = imageRef.putFile(uri)
             uploadTask.await()
             val imageUrl = imageRef.downloadUrl.await().toString()
-            setImage.postValue(imageUrl)
+            val pictureName = imageRef.path
+            Log.d(javaClass.name, "Url: $imageUrl")
+            Log.d(javaClass.name, "Name: $pictureName")
+            setImage.postValue(Pair(imageUrl, pictureName))
         } catch (e: FirebaseException) {
             Log.e(javaClass.name, e.message, e)
             showMessage.postValue(e.message)
