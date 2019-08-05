@@ -1,5 +1,6 @@
 package com.michaelbukachi.alc42.main
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,9 @@ import com.michaelbukachi.alc42.R
 import kotlinx.android.synthetic.main.deal_list_item.view.*
 
 class DealAdapter : RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
+
     private val deals = ArrayList<TravelDeal>()
+    private val ids = mutableSetOf<String>()
 
     fun updateData(newData: List<TravelDeal>) {
         deals.clear()
@@ -18,8 +21,17 @@ class DealAdapter : RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
     }
 
     fun addDeal(deal: TravelDeal) {
-        deals.add(deal)
-        notifyItemInserted(deals.size - 1)
+        if (!ids.contains(deal.id)) {
+            deals.add(deal)
+            ids.add(deal.id!!)
+            notifyItemInserted(deals.size - 1)
+        }
+    }
+
+    fun removeDeal(id: String) {
+        val index = deals.indexOfFirst { it.id?.equals(id) == true }
+        deals.removeAt(index)
+        notifyItemRemoved(index)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DealViewHolder {
@@ -35,15 +47,27 @@ class DealAdapter : RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
     }
 
 
-    class DealViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class DealViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         val title: TextView = itemView.title
         val description: TextView = itemView.description
         val price: TextView = itemView.price
+
+        init {
+            itemView.setOnClickListener(this)
+        }
 
         fun bind(deal: TravelDeal) {
             title.text = deal.title
             description.text = deal.description
             price.text = deal.price
+        }
+
+        override fun onClick(view: View) {
+            val position = adapterPosition
+            val deal = deals[position]
+            val intent = Intent(view.context, AdminActivity::class.java)
+            intent.putExtra("deal", deal)
+            view.context.startActivity(intent)
         }
     }
 }

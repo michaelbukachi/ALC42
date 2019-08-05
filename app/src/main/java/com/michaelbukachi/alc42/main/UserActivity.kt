@@ -27,14 +27,20 @@ class UserActivity : AppCompatActivity() {
         dealsList.adapter = adapter
         viewModel = ViewModelProviders.of(this)[DealViewModel::class.java]
         viewModel.showMessageInt.observe(this, Observer {
+            progressBar.visibility = View.GONE
             Snackbar.make(container, it, Snackbar.LENGTH_SHORT).show()
         })
         viewModel.showMessage.observe(this, Observer {
+            progressBar.visibility = View.GONE
             Snackbar.make(container, it, Snackbar.LENGTH_SHORT).show()
         })
         viewModel.onNewDeal.observe(this, Observer {
             blank.visibility = View.GONE
+            progressBar.visibility = View.GONE
             adapter.addDeal(it)
+        })
+        viewModel.onRemoveDeal.observe(this, Observer {
+            adapter.removeDeal(it)
         })
     }
 

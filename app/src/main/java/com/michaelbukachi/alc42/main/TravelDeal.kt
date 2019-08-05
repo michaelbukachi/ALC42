@@ -1,9 +1,11 @@
 package com.michaelbukachi.alc42.main
 
+import java.io.Serializable
+
 data class TravelDeal(
-    val id: String? = null,
-    val title: String? = null,
-    val description: String? = null,
-    val price: String? = null,
-    val imageUrl: String? = null
-)
+    var id: String? = null,
+    var title: String? = null,
+    var description: String? = null,
+    var price: String? = null,
+    var imageUrl: String? = null
+) : Serializable

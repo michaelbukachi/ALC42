@@ -15,6 +15,7 @@ class DealViewModel : ViewModel() {
     val showMessageInt = SingleLiveEvent<Int>()
     val showMessage = SingleLiveEvent<String>()
     val onNewDeal = SingleLiveEvent<TravelDeal>()
+    val onRemoveDeal = SingleLiveEvent<String>()
     private val db = FirebaseDatabase.getInstance()
     private val dealsRef = db.reference.child("traveldeals")
 
@@ -22,7 +23,7 @@ class DealViewModel : ViewModel() {
         dealsRef.addChildEventListener(object : ChildEventListener {
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(javaClass.name, error.message, error.toException())
+                Log.e(javaClass.name, error.message, error.toException().cause)
                 showMessage.postValue(error.message)
             }
 
@@ -33,19 +34,29 @@ class DealViewModel : ViewModel() {
             }
 
             override fun onChildAdded(snapshot: DataSnapshot, key: String?) {
+                Log.i(javaClass.name, "Id is ${snapshot.key}")
                 val deal = snapshot.getValue(TravelDeal::class.java)
+                deal!!.id = snapshot.key
                 onNewDeal.postValue(deal)
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
+                onRemoveDeal.postValue(snapshot.key)
             }
         })
     }
 
-    fun saveDeal(title: String, description: String, price: String) = viewModelScope.launch {
-        val deal = TravelDeal(title = title, description = description, price = price, imageUrl = "")
-        dealsRef.push().setValue(deal).await()
+    fun saveDeal(deal: TravelDeal) = viewModelScope.launch {
+        if (deal.id == null) {
+            dealsRef.push().setValue(deal).await()
+        } else {
+            dealsRef.child(deal.id!!).setValue(deal).await()
+        }
 
+    }
+
+    fun deleteDeal(id: String) = viewModelScope.launch {
+        dealsRef.child(id).removeValue().await()
     }
 
 }
