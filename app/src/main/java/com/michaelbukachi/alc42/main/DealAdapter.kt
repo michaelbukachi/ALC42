@@ -20,20 +20,6 @@ class DealAdapter : RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
         notifyDataSetChanged()
     }
 
-    fun addDeal(deal: TravelDeal) {
-        if (!ids.contains(deal.id)) {
-            deals.add(deal)
-            ids.add(deal.id!!)
-            notifyItemInserted(deals.size - 1)
-        }
-    }
-
-    fun removeDeal(id: String) {
-        val index = deals.indexOfFirst { it.id?.equals(id) == true }
-        deals.removeAt(index)
-        notifyItemRemoved(index)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DealViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.deal_list_item, parent, false)
         return DealViewHolder(itemView)

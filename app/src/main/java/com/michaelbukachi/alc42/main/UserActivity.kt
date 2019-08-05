@@ -34,13 +34,10 @@ class UserActivity : AppCompatActivity() {
             progressBar.visibility = View.GONE
             Snackbar.make(container, it, Snackbar.LENGTH_SHORT).show()
         })
-        viewModel.onNewDeal.observe(this, Observer {
-            blank.visibility = View.GONE
+        viewModel.onDeals.observe(this, Observer {
+            blank.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
             progressBar.visibility = View.GONE
-            adapter.addDeal(it)
-        })
-        viewModel.onRemoveDeal.observe(this, Observer {
-            adapter.removeDeal(it)
+            adapter.updateData(it)
         })
     }
 
