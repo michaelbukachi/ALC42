@@ -28,6 +28,12 @@ class AdminActivity : AppCompatActivity() {
         viewModel.showMessage.observe(this, Observer {
             Snackbar.make(container, it, Snackbar.LENGTH_SHORT).show()
         })
+        viewModel.refreshMenu.observe(this, Observer {
+            invalidateOptionsMenu()
+            txtTitle.isEnabled = viewModel.isAdmin
+            txtDescription.isEnabled = viewModel.isAdmin
+            txtPrice.isEnabled = viewModel.isAdmin
+        })
         val deal = intent.getSerializableExtra("deal") as TravelDeal?
         deal?.let {
             this.deal = it
@@ -35,11 +41,14 @@ class AdminActivity : AppCompatActivity() {
         txtTitle.setText(this.deal.title)
         txtDescription.setText(this.deal.description)
         txtPrice.setText(this.deal.price)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.admin_menu, menu)
+        menu.findItem(R.id.save).isVisible = viewModel.isAdmin
+        menu.findItem(R.id.delete).isVisible = viewModel.isAdmin
         return true
     }
 

@@ -39,6 +39,9 @@ class UserActivity : AppCompatActivity() {
             progressBar.visibility = View.GONE
             adapter.updateData(it)
         })
+        viewModel.refreshMenu.observe(this, Observer {
+            invalidateOptionsMenu()
+        })
     }
 
     override fun onStart() {
@@ -49,6 +52,8 @@ class UserActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.user_menu, menu)
+        val addMenu = menu.findItem(R.id.new_deal)
+        addMenu.isVisible = viewModel.isAdmin
         return true
     }
 
