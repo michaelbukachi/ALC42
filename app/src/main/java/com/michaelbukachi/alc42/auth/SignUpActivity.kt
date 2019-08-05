@@ -22,7 +22,7 @@ class SignUpActivity : AppCompatActivity() {
         setTitle(R.string.sign_up)
         saveButton.setOnClickListener {
             if (email.text.toString().isEmpty() || name.text.toString().isEmpty() || password.text.toString().isEmpty()) {
-                Snackbar.make(container, "Please fill all fields", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(container, getString(R.string.fill_all_fields), Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -43,8 +43,9 @@ class SignUpActivity : AppCompatActivity() {
             Snackbar.make(container, it, Snackbar.LENGTH_SHORT).show()
         })
         viewModel.launchMain.observe(this, Observer {
-            startActivity(Intent(this@SignUpActivity, UserActivity::class.java))
-            finish()
+            val intent = Intent(this@SignUpActivity, UserActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
         })
     }
 }

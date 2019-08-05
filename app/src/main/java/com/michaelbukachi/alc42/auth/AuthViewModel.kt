@@ -38,11 +38,17 @@ class AuthViewModel: ViewModel() {
 
     fun signUp(email: String, password: String, name: String) = viewModelScope.launch(Dispatchers.IO) {
         try {
-            auth.signInWithEmailAndPassword(email, password)
+            Log.i(javaClass.name, "Signing in...")
+            auth.signInWithEmailAndPassword(email, password).await()
+            showMessageInt.postValue(R.string.success)
+            launchMain.postValue(null)
         } catch (e: FirebaseException) {
             if (e is FirebaseAuthInvalidUserException) {
-                auth.createUserWithEmailAndPassword(email, password)
+                Log.i(javaClass.name, "Signing up...")
+                auth.createUserWithEmailAndPassword(email, password).await()
                 setDisplayName(name)
+                showMessageInt.postValue(R.string.success)
+                launchMain.postValue(null)
             } else {
                 Log.e(javaClass.name, "An error occurred", e)
                 showMessage.postValue(getPrettyMessage(e))

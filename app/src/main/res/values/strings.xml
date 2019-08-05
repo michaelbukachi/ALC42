@@ -10,4 +10,6 @@
     <string name="password">Password</string>
     <string name="save">Save</string>
     <string name="sign_up">Sign Up</string>
+    <string name="fill_all_fields">Please fill all fields</string>
+    <string name="google_sign_in">Sign in with google</string>
 </resources>

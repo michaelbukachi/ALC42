@@ -30,7 +30,7 @@ class AuthActivity : AppCompatActivity() {
         setTitle(R.string.app_name)
         googleSignIn.setSize(SignInButton.SIZE_STANDARD)
         val googleText = googleSignIn.getChildAt(0) as TextView
-        googleText.text = "Sign in with google"
+        googleText.text = getString(R.string.google_sign_in)
         googleSignIn.setOnClickListener {
             signInWithGoogle()
         }
