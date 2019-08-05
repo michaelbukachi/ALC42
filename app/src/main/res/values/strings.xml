@@ -14,4 +14,8 @@
     <string name="google_sign_in">Sign in with google</string>
     <string name="deal_image">Deal Image</string>
     <string name="no_deals">No Deals</string>
+    <string name="price">Price</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="new_deal">New Travel Deal</string>
 </resources>

@@ -11,7 +11,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".auth.SignUpActivity" android:parentActivityName=".auth.AuthActivity"/>
+        <activity
+            android:name=".main.AdminActivity"
+            android:parentActivityName=".main.UserActivity" />
+        <activity
+            android:name=".auth.SignUpActivity"
+            android:parentActivityName=".auth.AuthActivity" />
         <activity android:name=".main.UserActivity" />
         <activity android:name=".auth.AuthActivity">
             <intent-filter>
